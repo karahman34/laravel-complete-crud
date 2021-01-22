@@ -151,7 +151,11 @@ $('body').on('click', '.delete-prompt-trigger', function (e) {
     reverseButtons: true,
     showCancelButton: true,
     confirmButtonColor: '#fb3838',
-    confirmButtonText: 'Yes, delete it!'
+    confirmButtonText: 'Yes, delete it!',
+    preConfirm: () => {
+      Swal.showLoading()
+    },
+    allowOutsideClick: () => !Swal.isLoading(),
   }).then(({ isConfirmed }) => {
     if (isConfirmed) {
       const url = $btn.attr('href')
