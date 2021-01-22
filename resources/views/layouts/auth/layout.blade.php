@@ -17,32 +17,25 @@
   <link rel="stylesheet" href="{{ asset('dist/stisla/css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('dist/stisla/css/components.css') }}">
 
-  @stack('css')
+  <style>
+    section.section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+  </style>
 </head>
 
 <body>
   <div id="app">
-    <div class="main-wrapper">
-      {{-- Navbar --}}
-      @include('layouts.default.navbar')
+    <section class="section">
+      <div class="container mt-5">
+        @yield('content')
 
-      {{-- Sidebar --}}
-      @include('layouts.default.sidebar')
-
-      <!-- Main Content -->
-      <div class="main-content">
-        <section class="section">
-          <div class="section-header">
-            <h1>@isset($title) {{ $title }} @else Dashboard @endisset</h1>
-          </div>
-
-          @yield('content')
-        </section>
+        @include('layouts.auth.footer')
       </div>
-
-      <!-- Footer -->
-      @include('layouts.default.footer')
-    </div>
+    </section>
   </div>
 
   {{-- Logout Form --}}
@@ -62,11 +55,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
   <script src="{{ asset('dist/stisla/js/stisla.js') }}"></script>
 
+  <!-- JS Libraies -->
+
   <!-- Template JS File -->
   <script src="{{ asset('dist/stisla/js/scripts.js') }}"></script>
   <script src="{{ asset('dist/stisla/js/custom.js') }}"></script>
-
-  @stack('script')
 </body>
 
 </html>
