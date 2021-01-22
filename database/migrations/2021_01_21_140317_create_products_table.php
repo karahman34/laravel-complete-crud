@@ -19,7 +19,7 @@ class CreateProductsTable extends Migration
             $table->string('image')->nullable();
             $table->string('name');
             $table->unsignedInteger('price');
-            $table->enum('available', ['Y', 'N']);
+            $table->enum('status', ['Y', 'N']);
             $table->timestamps();
         });
     }

@@ -25,7 +25,7 @@ class ProductFactory extends Factory
             'image' => null,
             'name' => ucwords($this->faker->words(rand(1, 4), true)),
             'price' => $this->faker->numberBetween(5, 500) . "000",
-            'available' => rand(0, 1) === 1 ? 'Y' : 'N',
+            'status' => rand(0, 1) === 1 ? 'Y' : 'N',
         ];
     }
 }

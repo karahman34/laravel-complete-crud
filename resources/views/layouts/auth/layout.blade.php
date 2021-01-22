@@ -59,7 +59,6 @@
 
   <!-- Template JS File -->
   <script src="{{ asset('dist/stisla/js/scripts.js') }}"></script>
-  <script src="{{ asset('dist/stisla/js/custom.js') }}"></script>
 </body>
 
 </html>

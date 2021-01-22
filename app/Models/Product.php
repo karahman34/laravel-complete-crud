@@ -15,8 +15,10 @@ class Product extends Model
         'image',
         'name',
         'price',
-        'available'
+        'status'
     ];
+
+    public static $image_folder = 'images/products';
 
     /**
      * Get the author of the product.
