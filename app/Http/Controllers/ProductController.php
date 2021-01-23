@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductsExport;
 use App\Http\Requests\ProductRequest;
+use App\Imports\ProductsImport;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class ProductController extends Controller
@@ -34,6 +37,61 @@ class ProductController extends Controller
                             })
                             ->rawColumns(['actions'])
                             ->make(true);
+    }
+
+    /**
+     * Export resources.
+     *
+     * @param   Request  $request
+     *
+     * @return  mixed
+     */
+    public function export(Request $request)
+    {
+        $allowedFormats = ['xlsx', 'csv'];
+
+        if ($request->get('export') != 1) {
+            return view('components.export-modal', [
+                'formats' => $allowedFormats,
+                'action' => route('products.export')
+            ]);
+        }
+
+        $request->validate([
+            'take' => 'required|bail|integer|gte:10',
+            'format' => 'required|string|in:' . implode(',', $allowedFormats),
+        ]);
+
+        $format = strtolower($request->format);
+
+        return Excel::download(new ProductsExport($request->take), "products.{$format}");
+    }
+
+    /**
+     * Import and insert data from the file.
+     *
+     * @param   Request  $request
+     *
+     * @return  mixed
+     */
+    public function import(Request $request)
+    {
+        if (strtolower($request->method()) === 'get') {
+            return view('components.import-modal', [
+                'action' => route('products.import')
+            ]);
+        }
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,pdf'
+        ]);
+
+        Excel::import(new ProductsImport, $request->file('file'));
+
+        return response()->json([
+            'ok' => true,
+            'message' => 'Success to import file data.'
+        ], 201);
     }
 
     /**

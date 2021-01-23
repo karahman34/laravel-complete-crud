@@ -3,12 +3,30 @@
 @section('content')
   <div class="card">
     <div class="card-header with-button">
+      {{-- Title --}}
       <h4><i class="fas fa-box mr-1"></i> {{ $title }}</h4>
-      <a href="{{ route('products.create') }}" class="btn btn-primary form-modal-trigger"
-        data-modal-title="Create Product" data-modal-action="create">
-        <i class="fas fa-plus mr-1"></i>
-        <span>Create</span>
-      </a>
+
+      {{-- Actions --}}
+      <div class="d-flex align-items-center">
+        {{-- Export --}}
+        <a href="{{ route('products.export') }}" class="btn btn-success btn-modal-trigger" data-modal=".export-modal">
+          <i class="fas fa-download"></i>
+          <span>Export</span>
+        </a>
+
+        {{-- Import --}}
+        <a href="{{ route('products.import') }}" class="btn btn-danger btn-modal-trigger mx-2" data-modal=".import-modal">
+          <i class="fas fa-upload"></i>
+          <span>Import</span>
+        </a>
+
+        {{-- Create --}}
+        <a href="{{ route('products.create') }}" class="btn btn-primary form-modal-trigger"
+          data-modal-title="Create Product" data-modal-action="create">
+          <i class="fas fa-plus mr-1"></i>
+          <span>Create</span>
+        </a>
+      </div>
     </div>
 
     <div class="card-body">
@@ -59,9 +77,11 @@
           }
         },
         {
-          data: 'actions'
+          data: 'actions',
+          searchable: false,
+          orderable: false,
         },
-      ]
+      ],
     })
 
   </script>
