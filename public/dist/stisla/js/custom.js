@@ -56,107 +56,6 @@ for (let i = 0; i < logoutButtons.length; i++) {
   logoutButtons[i].addEventListener('click', () => logoutForm.submit())
 }
 
-// Form Modal Trigger
-$('body').on('click', '.form-modal-trigger', function (e) {
-  e.preventDefault()
-  const $formModal = $('#form-modal')
-  const $btn = $(this)
-  const title = $btn.data('modal-title')
-  const action = $btn.data('modal-action')
-  const href = $btn.attr('href')
-
-  const prevContent = $btn.html()
-  $btn.html('<i class="fas fa-spinner fa-spin"></i>')
-
-  $.get(href, (res) => {
-    $formModal.find('.modal-body').html(res)
-
-    if (title) {
-      $formModal.find('.modal-title').html(title)
-    }
-
-    if (action) {
-      // Set submit text
-      $formModal.find('.btn-submit').html(action.charAt(0).toUpperCase() + action.slice(1))
-
-      // Set button type
-      $formModal.find('.btn-submit').addClass(action.toLowerCase() === 'create' ? 'btn-primary' : 'btn-warning')
-    }
-
-    $formModal.modal('toggle')
-  })
-    .fail(() => alert('Failed to get modal data.'))
-    .always(() => $btn.html(prevContent))
-})
-
-// Form Button Submit
-$('#form-modal .btn-submit').click(function (e) {
-  e.preventDefault()
-  $('#form-modal form').submit()
-})
-
-//Form Modal Submit
-$('body').on('submit', '#form-modal form', function (e) {
-  e.preventDefault()
-  const $form = $(this)
-  const url = $form.attr('action')
-  const data = new FormData(this)
-  const $formModal = $('#form-modal')
-
-  // Remove previous errors
-  removeValidationErrors($form)
-
-  // Set loading
-  const submitBtnContent = $formModal.find('.btn-submit').html()
-  $formModal.find('.btn-submit').html(`
-    <i class="fas fa-spinner fa-spin"></i>
-  `)
-
-  $.ajax({
-    url,
-    data,
-    type: 'POST',
-    cache: false,
-    contentType: false,
-    processData: false,
-    success: () => {
-      const dataTableSelector = $form.data('table-selector')
-      if (dataTableSelector) {
-        const stayPaging = $form.data('form-action').toLowerCase() == 'patch'
-        const $dataTable = $(dataTableSelector)
-
-        stayPaging
-          ? $dataTable.DataTable().ajax.reload(null, false)
-          : $dataTable.DataTable().order([0, 'desc']).draw()
-      }
-
-      $formModal.modal('hide')
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Complete!',
-        text: 'The action has been executed successfully!',
-      })
-    },
-    error: err => {
-      const errCode = err.status
-      const errData = err.responseJSON
-
-      // Validation Error
-      if (errCode === 422) {
-        showValidationErrors(errData.errors, $form)
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Error while submitting data.',
-        })
-      }
-    }
-  })
-    .always(() => $formModal.find('.btn-submit').html(submitBtnContent))
-})
-
 // Delete Promp
 $('body').on('click', '.delete-prompt-trigger', function (e) {
   e.preventDefault()
@@ -166,7 +65,7 @@ $('body').on('click', '.delete-prompt-trigger', function (e) {
 
   Swal.fire({
     icon: 'warning',
-    title: `Are you sure want to delete ${itemName}?`,
+    title: `Are you sure want to delete "${itemName}" ?`,
     text: "You will not be able to recover this imaginary file!",
     reverseButtons: true,
     showCancelButton: true,
@@ -185,10 +84,12 @@ $('body').on('click', '.delete-prompt-trigger', function (e) {
           Swal.fire({
             icon: 'success',
             title: 'Complete!',
-            text: `${itemName} has been deleted.`,
+            text: `"${itemName}" has been deleted.`,
           })
 
-          $($btn.data('table-selector')).DataTable().ajax.reload(null, false)
+          if ($btn.hasClass('has-datatable')) {
+            $($btn.data('datatable')).DataTable().ajax.reload(null, false)
+          }
         })
         .fail(() => Swal.fire({
           icon: 'error',
@@ -202,6 +103,7 @@ $('body').on('click', '.delete-prompt-trigger', function (e) {
 // Modal Api Trigger
 $('body').on('click', '.btn-modal-trigger[data-modal]', function (e) {
   e.preventDefault()
+
   const $btn = $(this)
   const url = $btn.attr('href')
   const modalSelector = $btn.data('modal')
@@ -212,9 +114,9 @@ $('body').on('click', '.btn-modal-trigger[data-modal]', function (e) {
 
   $.get(url, function (res) {
     $('#app').append(res)
-    const $modal = $(modalSelector)
+    const $modal = $(`.modal${modalSelector}`)
     $modal.modal('show')
-    $modal.on('hidden.bs.modal', function (e) {
+    $modal.on('hidden.bs.modal', function () {
       $modal.remove()
     })
   })
@@ -272,7 +174,7 @@ $('body').on('submit', 'form.need-ajax', function (e) {
         const $dataTable = $($form.data('datatable'))
         const stayPaging = $form.data('stay-paging')
 
-        stayPaging == 'true'
+        stayPaging == '1'
           ? $dataTable.DataTable().ajax.reload(null, false)
           : $dataTable.DataTable().order([0, 'desc']).draw()
       }

@@ -29,9 +29,9 @@ class ProductController extends Controller
 
         return DataTables::of(Product::query())
                             ->addColumn('actions', function (Product $product) {
-                                $editButton = '<a href="'.route('products.edit', ['product' => $product->id]).'" class="btn btn-warning form-modal-trigger mr-2" data-modal-title="Edit '.$product->name.'" data-modal-action="update"><i class="fas fa-edit"></i></a>';
+                                $editButton = '<a href="'.route('products.edit', ['product' => $product->id]).'" class="btn btn-warning btn-modal-trigger mr-2" data-modal=".product-form"><i class="fas fa-edit"></i></a>';
 
-                                $deleteButton = '<a href="'.route('products.destroy', ['product' => $product->id]).'" class="btn btn-danger delete-prompt-trigger" data-item-name="'.$product->name.'" data-table-selector="#data-table"><i class="fas fa-trash"></i></a>';
+                                $deleteButton = '<a href="'.route('products.destroy', ['product' => $product->id]).'" class="btn btn-danger delete-prompt-trigger has-datatable" data-item-name="'.$product->name.'" data-datatable="#data-table"><i class="fas fa-trash"></i></a>';
 
                                 return $editButton . $deleteButton;
                             })
@@ -101,9 +101,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('components.product.form', [
-            'action' => 'create'
-        ]);
+        return view('components.product.form');
     }
 
     /**
@@ -143,7 +141,6 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         return view('components.product.form', [
-            'action' => 'edit',
             'product' => $product
         ]);
     }

@@ -53,27 +53,6 @@
     @csrf
   </form>
 
-  {{-- Form Modal // Trigger from API --}}
-  <div class="modal fade" id="form-modal" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body pb-0">
-
-        </div>
-        <div class="modal-footer pt-0">
-          <button type="button" class="btn btn-secondary btn-close" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-submit">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- General JS Scripts -->
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>

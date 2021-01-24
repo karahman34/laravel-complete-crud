@@ -21,8 +21,7 @@
         </a>
 
         {{-- Create --}}
-        <a href="{{ route('products.create') }}" class="btn btn-primary form-modal-trigger"
-          data-modal-title="Create Product" data-modal-action="create">
+        <a href="{{ route('products.create') }}" class="btn btn-primary btn-modal-trigger" data-modal=".product-form">
           <i class="fas fa-plus mr-1"></i>
           <span>Create</span>
         </a>
