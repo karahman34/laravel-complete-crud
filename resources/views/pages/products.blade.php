@@ -50,8 +50,14 @@
         },
         {
           data: 'image',
+          searchable: false,
+          orderable: false,
           render: function(data) {
-            return !data ? 'null' : `<img class="img-fluid" src="/storage/${data}">`
+            if (!data) {
+              return '<span class="text-muted font-italic">null</span>'
+            }
+
+            return `<img class="img-fluid" src="${data}" alt="product-image" />`
           }
         },
         {

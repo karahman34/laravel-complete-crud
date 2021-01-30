@@ -28,6 +28,9 @@ class ProductController extends Controller
         }
 
         return DataTables::of(Product::query())
+                            ->editColumn('image', function (Product $product) {
+                                return is_null($product->image) ? null : Storage::url($product->image);
+                            })
                             ->addColumn('actions', function (Product $product) {
                                 $editButton = '<a href="'.route('products.edit', ['product' => $product->id]).'" class="btn btn-warning btn-modal-trigger mr-2" data-modal=".product-form"><i class="fas fa-edit"></i></a>';
 
