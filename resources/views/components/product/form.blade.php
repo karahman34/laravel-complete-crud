@@ -4,8 +4,6 @@ $route = $action === 'create' ? route('products.store') : route('products.update
 $method = $action === 'create' ? 'POST' : 'PATCH';
 
 $modalTitle = $action === 'create' ? 'Create Product' : 'Edit ' . $product->name;
-$btnType = $action === 'create' ? 'btn-primary' : 'btn-warning';
-$btnText = $action === 'create' ? 'Create' : 'Update'
 @endphp
 
 <div class="modal fade product-form" role="dialog" aria-hidden="true">
@@ -19,8 +17,8 @@ $btnText = $action === 'create' ? 'Create' : 'Update'
       </div>
       <div class="modal-body">
         {{-- The Form --}}
-        <form action="{{ $route }}" method="POST" class="need-ajax has-modal has-datatable" data-datatable="#data-table"
-          enctype="multipart/form-data" @if ($action === 'update') data-stay-paging="1" @endif>
+        <form action="{{ $route }}" method="POST" class="need-ajax has-modal has-datatable"
+          data-datatable="#data-table" enctype="multipart/form-data" @if ($action === 'update') data-stay-paging="1" @endif>
           @csrf @method($method)
 
           <div class="form-group">
@@ -54,10 +52,8 @@ $btnText = $action === 'create' ? 'Create' : 'Update'
             <input type="file" name="image" id="image" class="form-control-file">
           </div>
 
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-light" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn {{ $btnType }}">{{ $btnText }}</button>
-          </div>
+          {{-- Actions --}}
+          @include('components.modal-actions', ['action' => $action])
         </form>
       </div>
     </div>
