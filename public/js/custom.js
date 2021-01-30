@@ -10,27 +10,33 @@
 const CSRF_TOKEN = document.querySelector('meta[name=csrf-token]').getAttribute('content')
 
 function removeValidationErrors($form) {
-  $form.find('.form-group .form-control').removeClass('is-valid')
-  $form.find('.form-group .form-control').removeClass('is-invalid')
+  $form.find('.form-group .is-valid').removeClass('is-valid')
+  $form.find('.form-group .is-invalid').removeClass('is-invalid')
   $form.find('.form-group .text-danger').remove()
 }
 
 function showValidationErrors(errorFields, $form) {
   const errorFieldsName = Object.keys(errorFields)
-  const $fields = $form.find('.form-group input')
+  const $fields = $form.find('.form-group input, .form-group select, .form-group textarea')
+
+  console.log($fields)
 
   $fields.each(function (i) {
     const $field = $(this)
-    const name = $field.attr('name')
+    const name = $field.attr('id')
     if (errorFieldsName.includes(name)) {
       // Set error field
       $field.addClass('is-invalid')
 
       // Show error message
-      $field.closest('.form-group').append(`
-              <p class="text-danger mb-0">${errorFields[name]}</p>
-            `)
+      const $formGroup = $field.closest('.form-group')
+      errorFields[name].forEach((errMsg) => {
+        $formGroup.append(`
+          <p class="text-danger mb-0">${errMsg}</p>
+        `)
+      })
     } else {
+      // Show field valid
       $field.addClass('is-valid')
     }
   })
@@ -44,9 +50,13 @@ function ButtonSpinner($btn) {
   this.show = () => {
     this.$btn.html(`<i class="fas fa-spinner fa-spin"></i>`)
     this.$btn.width(this.width)
+    this.$btn.attr('disabled', 'disabled')
   }
 
-  this.hide = () => this.$btn.html(this.content)
+  this.hide = () => {
+    this.$btn.html(this.content)
+    this.$btn.attr('disabled', null)
+  }
 }
 
 // Logout
@@ -57,7 +67,7 @@ for (let i = 0; i < logoutButtons.length; i++) {
 }
 
 // Delete Promp
-$('body').on('click', '.delete-prompt-trigger', function (e) {
+$(document).on('click', '.delete-prompt-trigger', function (e) {
   e.preventDefault()
 
   const $btn = $(this)
@@ -101,7 +111,7 @@ $('body').on('click', '.delete-prompt-trigger', function (e) {
 })
 
 // Modal Api Trigger
-$('body').on('click', '.btn-modal-trigger[data-modal]', function (e) {
+$(document).on('click', '.btn-modal-trigger[data-modal]', function (e) {
   e.preventDefault()
 
   const $btn = $(this)
@@ -118,7 +128,10 @@ $('body').on('click', '.btn-modal-trigger[data-modal]', function (e) {
     $modal.modal('show')
     $modal.on('hidden.bs.modal', function () {
       $modal.remove()
+      $(document).trigger('api-modal.removed', modalSelector)
     })
+
+    $(document).trigger('api-modal.loaded', modalSelector)
   })
     .fail(() => Swal.fire({
       icon: 'error',
@@ -129,7 +142,7 @@ $('body').on('click', '.btn-modal-trigger[data-modal]', function (e) {
 })
 
 // Export Modal Form Submit
-$('body').on('submit', '.export-modal form', function (e) {
+$(document).on('submit', '.export-modal form', function (e) {
   e.preventDefault()
   const $form = $(this)
   const url = $form.attr('action')
@@ -148,7 +161,7 @@ $('body').on('submit', '.export-modal form', function (e) {
 })
 
 // Normal Form
-$('body').on('submit', 'form.need-ajax', function (e) {
+$(document).on('submit', 'form.need-ajax', function (e) {
   e.preventDefault()
 
   const $form = $(this)
@@ -161,7 +174,24 @@ $('body').on('submit', 'form.need-ajax', function (e) {
     url,
     data,
     type: method,
-    success: res => {
+  }
+
+  // Setting for file upload.
+  if (enctype === 'multipart/form-data') {
+    options['cache'] = false
+    options['contentType'] = false
+    options['processData'] = false
+  }
+
+  // Remove current validations.
+  removeValidationErrors($form)
+
+  // Show loading spinner.
+  const $btnSpinner = new ButtonSpinner($form.find('button[type=submit]'))
+  $btnSpinner.show()
+
+  $.ajax(options)
+    .done(res => {
       // Close Modal
       if ($form.hasClass('has-modal')) {
         const $modal = $form.closest('.modal')
@@ -179,13 +209,20 @@ $('body').on('submit', 'form.need-ajax', function (e) {
           : $dataTable.DataTable().order([0, 'desc']).draw()
       }
 
+      // Show popup message.
       Swal.fire({
         icon: 'success',
         title: 'Success!',
         text: res.message || 'Action success!',
       })
-    },
-    error: err => {
+
+      // Reset form.
+      $form.trigger('reset')
+
+      // Emit event on document.
+      $(document).trigger('form-ajax.success', [res, $form])
+    })
+    .fail(err => {
       const errCode = err.status
       const errData = err.responseJSON
 
@@ -196,24 +233,18 @@ $('body').on('submit', 'form.need-ajax', function (e) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Error while submitting data.',
+          text: err?.responseJSON?.message || 'Error while submitting data.',
         })
       }
-    }
-  }
 
-  if (enctype === 'multipart/form-data') {
-    options['cache'] = false
-    options['contentType'] = false
-    options['processData'] = false
-  }
+      // Emit event on document
+      $(document).trigger('form-ajax.error', [err, $form])
+    })
+    .always(res => {
+      // Hide loading spinner
+      $btnSpinner.hide()
 
-  // Set Loading
-  const $btnSpinner = new ButtonSpinner($form.find('button[type=submit]'))
-  $btnSpinner.show()
-
-  removeValidationErrors($form)
-
-  $.ajax(options)
-    .always(() => $btnSpinner.hide())
+      // Emit form event
+      $(document).trigger('form-ajax.submitted', [res, $form])
+    })
 })
