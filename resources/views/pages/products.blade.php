@@ -9,22 +9,16 @@
       {{-- Actions --}}
       <div class="d-flex align-items-center">
         {{-- Export --}}
-        <a href="{{ route('products.export') }}" class="btn btn-success btn-modal-trigger" data-modal=".export-modal">
-          <i class="fas fa-download"></i>
-          <span>Export</span>
-        </a>
+        @include('components.button.export-btn', ['action' => route('products.export')])
 
         {{-- Import --}}
-        <a href="{{ route('products.import') }}" class="btn btn-danger btn-modal-trigger mx-2" data-modal=".import-modal">
-          <i class="fas fa-upload"></i>
-          <span>Import</span>
-        </a>
+        @include('components.button.import-btn', ['action' => route('products.import')])
 
         {{-- Create --}}
-        <a href="{{ route('products.create') }}" class="btn btn-primary btn-modal-trigger" data-modal=".product-form">
-          <i class="fas fa-plus mr-1"></i>
-          <span>Create</span>
-        </a>
+        @include('components.button.create-btn', [
+        'action' => route('products.create'),
+        'modal' => '.product-form'
+        ])
       </div>
     </div>
 
