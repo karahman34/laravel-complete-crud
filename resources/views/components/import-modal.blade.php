@@ -17,7 +17,7 @@
             <input type="file" name="file" id="file" class="form-control-file">
           </div>
 
-          <button type="submit" class="btn btn-success w-100">
+          <button type="submit" class="btn btn-danger w-100">
             <i class="fas fa-upload mr-1"></i>
             <span>Import</span>
           </button>
