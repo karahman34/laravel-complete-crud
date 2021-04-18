@@ -21,8 +21,10 @@ class ProductFactory extends Factory
      */
     public function definition()
     {
+        $folder = Product::$image_folder;
+
         return [
-            'image' => null,
+            'image' => $folder . '/' . $this->faker->image("storage/app/public/{$folder}", 640, 480, null, false),
             'name' => ucwords($this->faker->words(rand(1, 4), true)),
             'price' => $this->faker->numberBetween(5, 500) . "000",
             'status' => rand(0, 1) === 1 ? 'Y' : 'N',
