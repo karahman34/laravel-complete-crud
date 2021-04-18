@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ProductsExport;
+use App\Helpers\ExportHelper;
+use App\Http\Requests\ExportRequest;
+use App\Http\Requests\ImportRequest;
 use App\Http\Requests\ProductRequest;
 use App\Imports\ProductsImport;
 use App\Models\Product;
@@ -45,51 +48,41 @@ class ProductController extends Controller
     /**
      * Export resources.
      *
-     * @param   Request  $request
+     * @param   ExportRequest  $exportRequest
      *
      * @return  mixed
      */
-    public function export(Request $request)
+    public function export(ExportRequest $exportRequest)
     {
-        $allowedFormats = ['xlsx', 'csv'];
-
-        if ($request->get('export') != 1) {
+        if ($exportRequest->showView()) {
             return view('components.export-modal', [
-                'formats' => $allowedFormats,
+                'formats' => $exportRequest->allowed_formats,
                 'action' => route('products.export')
             ]);
         }
 
-        $request->validate([
-            'take' => 'required|bail|integer|gte:10',
-            'format' => 'required|string|in:' . implode(',', $allowedFormats),
-        ]);
-
-        $format = strtolower($request->format);
-
-        return Excel::download(new ProductsExport($request->take), "products.{$format}");
+        return Excel::download(
+            new ProductsExport($exportRequest->take),
+            ExportHelper::formatFileName('products', $exportRequest->input('format'))
+        );
     }
 
     /**
      * Import and insert data from the file.
      *
-     * @param   Request  $request
+     * @param   ImportRequest   $importRequest
      *
      * @return  mixed
      */
-    public function import(Request $request)
+    public function import(ImportRequest $importRequest)
     {
-        if (strtolower($request->method()) === 'get') {
+        if ($importRequest->showView()) {
             return view('components.import-modal', [
                 'action' => route('products.import')
             ]);
         }
 
-        $request->validate([
-            'file' => 'required|mimes:xlsx,csv,pdf'
-        ]);
-
-        Excel::import(new ProductsImport, $request->file('file'));
+        Excel::import(new ProductsImport, $importRequest->file('file'));
 
         return response()->json([
             'ok' => true,

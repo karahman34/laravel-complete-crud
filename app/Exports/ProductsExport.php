@@ -6,8 +6,9 @@ use App\Models\Product;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ProductsExport implements FromCollection, WithHeadings, ShouldAutoSize
+class ProductsExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping
 {
     private $limit;
 
@@ -20,7 +21,6 @@ class ProductsExport implements FromCollection, WithHeadings, ShouldAutoSize
     {
         return [
             'id',
-            'image',
             'name',
             'price',
             'status',
@@ -29,12 +29,24 @@ class ProductsExport implements FromCollection, WithHeadings, ShouldAutoSize
         ];
     }
 
+    public function map($product): array
+    {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->price,
+            'status' => $product->status,
+            'created_at' => $product->created_at->toDateTimeString(),
+            'updated_at' => $product->updated_at->toDateTimeString(),
+        ];
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
-        return Product::select('id', 'image', 'name', 'price', 'status', 'created_at', 'updated_at')
+        return Product::select('id', 'name', 'price', 'status', 'created_at', 'updated_at')
                         ->limit($this->limit)
                         ->get();
     }
