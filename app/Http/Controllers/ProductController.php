@@ -35,9 +35,16 @@ class ProductController extends Controller
                                 return is_null($product->image) ? null : Storage::url($product->image);
                             })
                             ->addColumn('actions', function (Product $product) {
-                                $editButton = '<a href="'.route('products.edit', ['product' => $product->id]).'" class="btn btn-warning btn-modal-trigger mr-2" data-modal=".product-form"><i class="fas fa-edit"></i></a>';
+                                $editButton = view('components.datatable.buttons.edit-btn', [
+                                    'url' => route('products.edit', ['product' => $product->id]),
+                                    'modal' => '.product-form',
+                                ]);
 
-                                $deleteButton = '<a href="'.route('products.destroy', ['product' => $product->id]).'" class="btn btn-danger delete-prompt-trigger has-datatable" data-item-name="'.$product->name.'" data-datatable="#data-table"><i class="fas fa-trash"></i></a>';
+                                $deleteButton = view('components.datatable.buttons.delete-btn', [
+                                    'url' => route('products.destroy', ['product' => $product->id]),
+                                    'dttb' => '#data-table',
+                                    'itemName' => $product->name,
+                                ]);
 
                                 return $editButton . $deleteButton;
                             })
