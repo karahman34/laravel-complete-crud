@@ -98,6 +98,12 @@ for (let i = 0; i < logoutButtons.length; i++) {
   logoutButtons[i].addEventListener('click', () => logoutForm.submit())
 }
 
+// On Ready
+$(document).ready(function () {
+  // Initialize tooltip.
+  $('body').tooltip({ selector: '[data-toggle="tooltip"]' })
+})
+
 // Delete Promp
 $(document).on('click', '.delete-prompt-trigger', function (e) {
   e.preventDefault()
