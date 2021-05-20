@@ -8,6 +8,33 @@
  "use strict";
 
  const CSRF_TOKEN = document.querySelector('meta[name=csrf-token]').getAttribute('content')
+
+ function pinActiveMenu() {
+  const $navLinks = $('.main-sidebar .nav-link:not(.has-dropdown)')
+  let currentUrl = window.location.href
+
+  if (currentUrl.charAt(currentUrl.length - 1) == '/') {
+    currentUrl = currentUrl.slice(0, -1)
+  }
+
+  $navLinks.each(function () {
+    const $navLink = $(this)
+    const navUrl = $navLink.attr('href')
+
+    if (navUrl == currentUrl) {
+      const $parent = $navLink.parent()
+
+      if ($parent.parent().hasClass('dropdown-menu')) {
+        const $dropdown = $parent.closest('.nav-item.dropdown')
+        $dropdown.addClass('active')
+      }
+
+      $parent.addClass('active')
+    }
+  })
+}
+pinActiveMenu()
+
  
  function removeValidationErrors($form) {
    $form.find('.form-group .is-valid').removeClass('is-valid')

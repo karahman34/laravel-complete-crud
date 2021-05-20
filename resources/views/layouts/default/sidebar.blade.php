@@ -19,12 +19,12 @@
       </li> --}}
 
       {{-- Dashboard --}}
-      <li @if (request()->is('dashboard')) class="active" @endif><a class="nav-link" href="{{ route('dashboard') }}"><i class="fas fa-fire"></i>
+      <li><a class="nav-link" href="{{ route('dashboard') }}"><i class="fas fa-fire"></i>
           <span>Dashboard</span></a>
       </li>
 
       {{-- Products --}}
-      <li @if (request()->is('products')) class="active" @endif>
+      <li>
         <a class="nav-link" href="{{ route('products.index') }}"><i class="fas fa-box"></i>
           <span>Products</span></a>
       </li>
